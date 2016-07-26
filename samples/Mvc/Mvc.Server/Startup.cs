@@ -43,6 +43,8 @@ namespace Mvc.Server {
                 .AllowAuthorizationCodeFlow()
                 .AllowRefreshTokenFlow()
 
+                .AddEphemeralSigningKey()
+
                 // During development, you can disable the HTTPS requirement.
                 .DisableHttpsRequirement()
 

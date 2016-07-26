@@ -1,0 +1,7 @@
+<template>
+  <a show.bind='!isLoggedIn' href="#" click.trigger="login()">Log in</a>
+  <a show.bind='isLoggedIn' href="#" click.trigger="logout()">Log out</a>
+  <p>${message}</p>
+</template>
+
+  
