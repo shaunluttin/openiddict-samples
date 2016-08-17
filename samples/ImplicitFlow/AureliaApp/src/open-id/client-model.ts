@@ -1,6 +1,6 @@
 export class ClientModel {
     public Scheme: string = "http://";
-    public ClientAuthority: string = "localhost:9000";
+    public ClientAuthority: string = "zamboni-app.azurewebsites.net"; // "localhost:9000";
     public ClientId: string = "myClient";
     public ResponseType: string = "id_token token";
     public RedirectPath: string = "/signin-oidc";

@@ -84,8 +84,8 @@ namespace Zamboni.AuthorizationServer
                         ClientId = "myClient",
                         ClientSecret = Crypto.HashPassword("secret_secret_secret"),
                         DisplayName = "My client application",
-                        LogoutRedirectUri = "http://localhost:9000/signout-oidc",
-                        RedirectUri = "http://localhost:9000/signin-oidc",
+                        LogoutRedirectUri = "http://zamboni-app.azurewebsites.net/signout-oidc", // "http://localhost:9000/signout-oidc",
+                        RedirectUri = "http://zamboni-app.azurewebsites.net/signin-oidc", // "http://localhost:9000/signin-oidc",
                         Type = OpenIddictConstants.ClientTypes.Public
                     });
                 }

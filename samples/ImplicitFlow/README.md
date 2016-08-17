@@ -1,5 +1,14 @@
 
-# Usuage
+# Azure App Service Usuage
+
+Create four Web Apps. For each, go to Application settings and set the appropriate `COMMAND`.
+
+* AuthorizationServer: deploy-implicit-auth-server.cmd
+* AureliaApp: deploy-implicit-aurelia-app.cmd
+* ResourceServer01: 
+* ResourceServer02: 
+
+# Local Usuage
 
 1. Install .NET Core
 2. Install NodeJS

@@ -5,7 +5,7 @@ import { StorageService } from "./storage-service";
 export class ProviderModel {
 
     public Scheme = "http://";
-    public OpenIdAuthority: string = "localhost:12345";
+    public OpenIdAuthority: string = "zamboni-auth.azurewebsites.net"; // "localhost:12345";
     public OpenIdConfigInfoPath: string = "/.well-known/openid-configuration";
     public GrantTypesSupported: string[];
     public IdTokenSigningAlgValuesSupported: string[];
