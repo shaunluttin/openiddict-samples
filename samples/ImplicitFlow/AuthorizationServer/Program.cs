@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting; 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace Zamboni.AuthorizationServer
 {
@@ -18,7 +19,9 @@ namespace Zamboni.AuthorizationServer
                 .ConfigureLogging(options => options.AddDebug())
                 .UseConfiguration(configuration)
                 .UseKestrel()
-                .UseUrls("http://localhost:12345")
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseIISIntegration()
+                // .UseUrls("http://localhost:12345")
                 .UseStartup<Startup>()
                 .Build();
 
