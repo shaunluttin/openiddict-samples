@@ -1,11 +1,13 @@
 import { TokenParser } from "../../../src/open-id/token-parser";
 import { IdTokenModel } from "../../../src/open-id/id-token-model";
-import { AccessTokenModel } from "../../../src/open-id/access-token-model";
 import { OpenIdResponseModel } from "../../../src/open-id/open-id-response-model";
+import { StorageService } from "../../../src/open-id/storage-service";
 import { ProviderModel } from "../../../src/open-id/provider-model";
 import { rawIdToken, rawAccessToken } from "./_test-data.js";
 
 describe("the IdTokenParser", function () {
+
+    let storageService: StorageService = new StorageService();
 
     let openIdResponse: OpenIdResponseModel = new OpenIdResponseModel();
     openIdResponse.IdToken = rawIdToken;
@@ -31,34 +33,35 @@ describe("the IdTokenParser", function () {
         expect(idToken.Usuage).toBe("id_token");
     });
 
-    it("decodes the access_token into an object", function () {
-        let accessToken: AccessTokenModel = parser.DecodeAccessToken(openIdResponse);
-        expect(accessToken.Aud).toBe("https://contoso.com");
-        expect(accessToken.Iss).toBe("https://sts.windows.net/e481747f-5da7-4538-cbbe-67e57f7d214e/");
-        expect(accessToken.Nbf).toBe(1391210850);
-        expect(accessToken.Exp).toBe(1391214450);
-        expect(accessToken.Sub).toBe("21749daae2a91137c259191622fa1");
+    it("throws when the id_token's iss claim does NOT match the provider's Issuer Identifier", function () {
+
+        let provider: ProviderModel = new ProviderModel(storageService);
+        spyOn(provider, "GetIssuer").and.returnValue("fakeIss2");
+
+        function wrapper() {
+
+            let idToken: IdTokenModel = new IdTokenModel();
+            idToken.Iss = "fakseIss1";
+
+            parser.ValidateIdToken(idToken, provider);
+        }
+
+        expect(wrapper).toThrow();
     });
 
-    it("returns false when the id_token's iss claim does not match the provider's Issuer Identifier", function () {
-        let idToken: IdTokenModel = new IdTokenModel();
-        idToken.Iss = "fakseIss1";
+    it("does not throw when the id_token's iss claim does match the provider's Issuer Identifier", function () {
 
-        let provider: ProviderModel = new ProviderModel();
-        provider.Issuer = "fakeIss2";
+        let provider: ProviderModel = new ProviderModel(storageService);
+        spyOn(provider, "GetIssuer").and.returnValue("fakeIss");
 
-        let result: boolean = parser.ValidateIdToken(idToken, provider);
-        expect(result).toBe(false);
-    });
+        function wrapper() {
 
-    it("returns true when the id_token's iss claim does not match the provider's Issuer Identifier", function () {
-        let idToken: IdTokenModel = new IdTokenModel();
-        idToken.Iss = "fakeIss";
+            let idToken: IdTokenModel = new IdTokenModel();
+            idToken.Iss = "fakeIss";
 
-        let provider: ProviderModel = new ProviderModel();
-        provider.Issuer = "fakeIss";
+            parser.ValidateIdToken(idToken, provider);
+        }
 
-        let result: boolean = parser.ValidateIdToken(idToken, provider);
-        expect(result).toBe(true);
+        expect(wrapper).not.toThrow();
     });
 });

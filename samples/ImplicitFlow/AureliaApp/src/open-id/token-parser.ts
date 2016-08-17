@@ -1,5 +1,4 @@
 import { IdTokenModel } from "./id-token-model";
-import { AccessTokenModel } from "./access-token-model";
 import { OpenIdResponseModel } from "./open-id-response-model";
 import { ProviderModel } from "./provider-model";
 import * as jwt_decode from "jwt-decode";
@@ -34,8 +33,8 @@ export class TokenParser {
         // 1 - Not applicable, because the token is not encrypted.
 
         // 2
-        if (idToken.Iss !== providerModel.Issuer) {
-            return false;
+        if (idToken.Iss !== providerModel.GetIssuer()) {
+            throw new Error(`${idToken.Iss} does not equal ${providerModel.GetIssuer()}.`);
         }
 
         // 3 TODO
@@ -51,20 +50,5 @@ export class TokenParser {
         // 13 TODO
 
         return true;
-    }
-
-    public DecodeAccessToken(openIdResponse: OpenIdResponseModel): AccessTokenModel {
-
-        let obj = jwt_decode(openIdResponse.AccessToken);
-        let decoded: AccessTokenModel = {
-            Aud: obj.aud,
-            Exp: obj.exp,
-            Iss: obj.iss,
-            Nbf: obj.nbf,
-            RawJwt: openIdResponse.AccessToken,
-            Sub: obj.sub,
-        };
-
-        return decoded;
     }
 }

@@ -2,7 +2,6 @@ import { autoinject } from "aurelia-framework";
 import { OpenIdResponseModel } from "./open-id-response-model";
 import { HttpDiscoveryService } from "./http-discovery-service";
 import { IdTokenModel } from "./id-token-model";
-import { AccessTokenModel } from "./access-token-model";
 import { OpenIdResponseParser } from "./open-id-response-parser";
 import { TokenParser } from "./token-parser";
 import { StorageService } from "./storage-service";
@@ -40,17 +39,13 @@ export class ImplicitFlowService {
         let location: Location = this.windowService.GetLocation();
         let openIdResponse: OpenIdResponseModel = this.openIdResponseParser.ParseWindowLocation(location);
 
-        let accessToken: AccessTokenModel = this.tokenParser.DecodeAccessToken(openIdResponse);
         let idToken: IdTokenModel = this.tokenParser.DecodeIdToken(openIdResponse);
 
-        let isValid: boolean = this.tokenParser.ValidateIdToken(idToken, this.providerModel);
-        if (!isValid) {
-            throw new Error("The id_token was invalid.");
-        }
+        this.tokenParser.ValidateIdToken(idToken, this.providerModel);
 
         let userInfo = new UserInfoModel();
         userInfo.IdToken = idToken;
-        userInfo.AccessToken = accessToken;
+        userInfo.AccessToken = openIdResponse.AccessToken;
         return userInfo;
     }
 }

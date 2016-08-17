@@ -1,3 +1,0 @@
-TODO: Modify the Aurelia build step, 
-TODO: so that it create the scripts/ directory, 
-TODO: instead of pushing that directory to the repo.

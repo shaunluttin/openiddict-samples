@@ -1,4 +1,3 @@
-import { AccessTokenModel } from "./access-token-model";
 import { IdTokenModel } from "./id-token-model";
 
 export class StorageService {
@@ -14,8 +13,16 @@ export class StorageService {
         return this.idTokenKey;
     }
 
-    public SetAccessToken(accessToken: AccessTokenModel) {
-        localStorage.setItem(this.accessTokenKey, accessToken.RawJwt);
+    public SetItem(key: string, data: string) {
+        localStorage.setItem(key, data);
+    }
+
+    public GetItem(key: string) {
+        return localStorage.getItem(key);
+    }
+
+    public SetAccessToken(accessToken: string) {
+        localStorage.setItem(this.accessTokenKey, accessToken);
     }
 
     public GetAccessToken(): string {

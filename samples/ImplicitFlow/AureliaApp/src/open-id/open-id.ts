@@ -55,18 +55,20 @@ class OpenId {
 
     // TODO Consider moving this into the UserInfo class.
     public IsLoggedIn() {
-        return this.storageService.GetAccessToken() !== null;
+        return this.storageService.GetAccessToken() !== null &&
+            this.user !== undefined &&
+            this.user !== null;
     }
 
     // NOTE: This is public only to facilitate unit testing.
-    public LoginRedirectHandler() {
+    public LoginRedirectHandler = () => {
         this.user = this.implicitFlowService.ValidateIdTokenAndRetrieveSubjectIdentifier();
         this.storageService.SetAccessToken(this.user.AccessToken);
         this.storageService.SetIdToken(this.user.IdToken);
     }
 
     // NOTE: This is public only to facilitate unit testing.
-    public PostLogoutRedirectHandler() {
+    public PostLogoutRedirectHandler = () => {
         this.storageService.ClearStorageServiceItems();
     }
 }

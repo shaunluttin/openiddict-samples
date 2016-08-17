@@ -31,8 +31,8 @@ export class HttpDiscoveryService {
         return this.httpClient.fetch(this.ConfigurationInformationUri)
             .then(response => response.json())
             .then(data => {
-                this.providerModel.Issuer = data.issuer;
-                this.providerModel.AuthorizationEndpoint = data.authorization_endpoint;
+                this.providerModel.SetIssuer(data.issuer);
+                this.providerModel.SetAuthorizationEndpoint(data.authorization_endpoint);
                 this.providerModel.JwksUri = data.jwks_uri;
                 this.providerModel.EndSessionEndpoint = data.end_session_endpoint;
                 this.providerModel.UserInfoEndpoint = data.userinfo_endpoint;
@@ -53,7 +53,7 @@ export class HttpDiscoveryService {
         // TODO Make this lazy and cache the result. 
 
         return this.ObtainOpenIdProviderConfigurationInformation()
-            .then(() => this.providerModel.AuthorizationEndpoint
+            .then(() => this.providerModel.GetAuthorizationEndpoint()
                 + `?client_id=${this.clientModel.ClientId}`
                 + `&response_type=${this.clientModel.ResponseType}`
                 + `&redirect_uri=${this.clientModel.RedirectUri}`

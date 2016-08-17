@@ -1,14 +1,12 @@
 import { StorageService } from "../../../src/open-id/storage-service";
-import { AccessTokenModel } from "../../../src/open-id/access-token-model";
 import { IdTokenModel } from "../../../src/open-id/id-token-model";
 
 describe("the StorageService", function () {
 
     let storageService: StorageService = new StorageService();
 
-    let accessToken: AccessTokenModel = <AccessTokenModel>{
-        RawJwt: "dummy_access_token",
-    };
+    let accessToken: string = "dummy_access_token";
+
     let idToken: IdTokenModel = <IdTokenModel>{
         RawJwt: "dummy_id_token",
     };
@@ -17,14 +15,14 @@ describe("the StorageService", function () {
         storageService.SetAccessToken(accessToken);
 
         let result = localStorage.getItem(storageService.AccessTokenKey);
-        expect(result).toBe(accessToken.RawJwt);
+        expect(result).toBe(accessToken);
     });
 
     it("gets the access token if one is available", function () {
-        localStorage.setItem(storageService.AccessTokenKey, accessToken.RawJwt);
+        localStorage.setItem(storageService.AccessTokenKey, accessToken);
 
         let result = storageService.GetAccessToken();
-        expect(result).toBe(accessToken.RawJwt);
+        expect(result).toBe(accessToken);
     });
 
     it("sets the id token", function () {
