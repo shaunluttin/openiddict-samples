@@ -94,25 +94,28 @@ echo %APP_PATH%
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
-  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%APP_PATH%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%APP_PATH%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd;node_modules;coverage;.editorconfig;README.md;TODO.md"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
 :: 2. Select node version
 call :SelectNodeVersion
 
-:: 3. Install npm packages
+:: 3. Install npm packages (including devDependencies), then build Aurelia.
 IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   pushd "%DEPLOYMENT_TARGET%"
-  call :ExecuteCmd !NPM_CMD! install --production
+  call :ExecuteCmd !NPM_CMD! install 
+  IF !ERRORLEVEL! NEQ 0 goto error
+  
+  :: this all works via the Azure SCM Debug console
+  :: and when we call this deployment command locally.
+  call :ExecuteCmd !NPM_CMD! install aurelia-cli -g
+  call :ExecuteCmd !NPM_CMD! install typings -g
+  call :ExecuteCmd typings install -y
+  call :ExecuteCmd au build
   IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
-
-:: 0. Build
-echo Building Aurelia application
-pushd %DEPLOYMENT_TARGET%"
-popd
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
