@@ -48,9 +48,17 @@ export class Login {
                 headers: fetchHeaders,
             };
 
-            let url = serverNum === 1
-                ? "http://localhost:5001/api/message"
-                : "http://localhost:5002/api/message";
+            let url: string;
+
+            if(window.location.hostname === "localhost") {
+                url = serverNum === 1
+                   ? "http://localhost:5001/api/message"
+                   : "http://localhost:5002/api/message";
+            } else {
+                url = serverNum === 1
+                   ? "http://zamboni-resource-01.azurewebsites.net/api/message"
+                   : "http://zamboni-resource-02.azurewebsites.net/api/message";
+            }
 
             this.httpClient.fetch(url, fetchInit)
                 .then((response) => response.text())
