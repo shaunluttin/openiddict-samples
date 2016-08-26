@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.IO;
 
-namespace Zamboni.AuthorizationServer
+namespace Mvc.Server 
 {
     public class Program
     {

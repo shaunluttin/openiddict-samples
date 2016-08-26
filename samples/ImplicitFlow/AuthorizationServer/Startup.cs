@@ -1,33 +1,43 @@
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using CryptoHelper;
 using OpenIddict;
+using Microsoft.Extensions.Configuration;
+using System;
+using Mvc.Server.Models;
+using Mvc.Server.Services;
 
-namespace Zamboni.AuthorizationServer
+namespace Mvc.Server
 {
     public class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlite("Filename=./authorization.db");
-            });
+            var configuration = new ConfigurationBuilder()
+                        .AddJsonFile("config.json")
+                        .AddEnvironmentVariables()
+                        .Build();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration["Data:DefaultConnection:ConnectionString"]));
+
+            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+                .AddEntityFrameworkStores<ApplicationDbContext, Guid>()
                 .AddDefaultTokenProviders();
 
             // Register the OpenIddict services, including the default Entity Framework stores.
-            services.AddOpenIddict<ApplicationUser, ApplicationDbContext>()
+            services.AddOpenIddict<ApplicationUser, IdentityRole<Guid>, ApplicationDbContext, Guid>()
 
                 // Enable the authorization, logout, token and userinfo endpoints.
                 .EnableAuthorizationEndpoint("/connect/authorize")
                 .EnableLogoutEndpoint("/connect/logout")
                 .EnableUserinfoEndpoint("/connect/userinfo")
+                .EnableIntrospectionEndpoint("/connect/introspect")
 
                 // Note: the Mvc.Client sample only uses the authorization code flow but you can enable
                 // the other flows if you need to support implicit, password or client credentials.
@@ -48,8 +58,11 @@ namespace Zamboni.AuthorizationServer
             services.AddTransient<ISmsSender, AuthMessageSender>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILogger<Startup> logger)
         {
+            // Set the Environment e.g. via PowerShell> $env:ASPNETCORE_ENVIRONMENT="Development"
+            logger.LogInformation(env.EnvironmentName);
+
             app.UseIdentity();
             app.UseOAuthValidation();
 
@@ -62,10 +75,10 @@ namespace Zamboni.AuthorizationServer
             app.UseMvcWithDefaultRoute();
 
             // In a production app, seed this in a setup tool.
-            SeedDatabase(app);
+            SeedDatabase(app, env);
         }
 
-        private void SeedDatabase(IApplicationBuilder app)
+        private void SeedDatabase(IApplicationBuilder app, IHostingEnvironment env)
         {
             var options = app
                 .ApplicationServices
@@ -76,18 +89,62 @@ namespace Zamboni.AuthorizationServer
                 // drop and recreate
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
-                
+
                 if (!context.Applications.Any())
                 {
-                    context.Applications.Add(new OpenIddictApplication
+                    var aureliaOidcHost = env.IsDevelopment()
+                            ? "localhost:9000"
+                            : "TODO.azurewebsites.net";
+
+                    context.Applications.Add(new OpenIddictApplication<Guid>
                     {
-                        ClientId = "myClient",
+                        ClientId = "Aurelia.OidcClientJs",
                         ClientSecret = Crypto.HashPassword("secret_secret_secret"),
-                        DisplayName = "My client application",
-                        LogoutRedirectUri = "http://zamboni-app.azurewebsites.net/signout-oidc", // "http://localhost:9000/signout-oidc",
-                        RedirectUri = "http://zamboni-app.azurewebsites.net/signin-oidc", // "http://localhost:9000/signin-oidc",
+                        DisplayName = "Aurelia Oidc Client Js",
+                        LogoutRedirectUri = $"http://{aureliaOidcHost}/signout-oidc",
+                        RedirectUri = $"http://{aureliaOidcHost}/signin-oidc",
                         Type = OpenIddictConstants.ClientTypes.Public
                     });
+
+                    var oidcClientHost = env.IsDevelopment()
+                           ? "localhost:5000"
+                           : "TODO.azurewebsites.net";
+
+                    context.Applications.Add(new OpenIddictApplication<Guid>
+                    {
+                        ClientId = "OidcClientJs.OidcClient",
+                        ClientSecret = Crypto.HashPassword("secret_secret_secret"),
+                        DisplayName = "Oidc Client Js - Oidc Client Sample",
+                        LogoutRedirectUri = $"http://{oidcClientHost}/oidc-client-sample.html",
+                        RedirectUri = $"http://{oidcClientHost}/oidc-client-sample.html",
+                        Type = OpenIddictConstants.ClientTypes.Public
+                    });
+
+                    context.Applications.Add(new OpenIddictApplication<Guid>
+                    {
+                        ClientId = "OidcClientJs.UserManager",
+                        ClientSecret = Crypto.HashPassword("secret_secret_secret"),
+                        DisplayName = "Oidc Client Js - User Manager Sample",
+                        LogoutRedirectUri = $"http://{oidcClientHost}/user-manager-sample.html",
+                        RedirectUri = $"http://{oidcClientHost}/user-manager-sample.html",
+                        Type = OpenIddictConstants.ClientTypes.Public
+                    });
+
+                    context.Applications.Add(new OpenIddictApplication<Guid>
+                    {
+                        ClientId = "ResourceServer01",
+                        ClientSecret = Crypto.HashPassword("secret_secret_secret"),
+                        Type = OpenIddictConstants.ClientTypes.Confidential
+                    });
+
+                    // TODO Consider using JWT or Validation for ResourceServer02, 
+                    // TODO because we used introspection for ResourceServer01
+                    context.Applications.Add(new OpenIddictApplication<Guid>
+                    {
+                        ClientId = "ResourceServer02",
+                        ClientSecret = Crypto.HashPassword("secret_secret_secret"),
+                        Type = OpenIddictConstants.ClientTypes.Confidential
+                    });      
                 }
 
                 context.SaveChanges();
