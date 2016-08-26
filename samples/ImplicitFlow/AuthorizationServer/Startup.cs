@@ -49,7 +49,7 @@ namespace Mvc.Server
                 .DisableHttpsRequirement()
 
                 // Register a new ephemeral key, that is discarded when the application
-                // shuts down. Tokens signed using this key are automatically invalidated.
+                // shuts down. Tokens signed using this key are automatically snvalidated.
                 // This method should only be used during development.
                 .AddEphemeralSigningKey();
 

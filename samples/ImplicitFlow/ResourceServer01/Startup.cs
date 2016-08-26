@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using NWebsec.AspNetCore.Middleware;
 
@@ -11,7 +12,7 @@ namespace Mvc.Server
             services.AddMvc();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDeveloperExceptionPage();
 
@@ -22,11 +23,15 @@ namespace Mvc.Server
             // Using it is recommended if your resource server is in a
             // different application/separated from the authorization server.
 
+            var authServerHost = env.IsDevelopment() 
+                ? "http://localhost:12345"
+                : "http://zamboni-auth-server.azurewebsites.net";
+
             app.UseOAuthIntrospection(options =>
             {
                 options.AutomaticAuthenticate = true;
                 options.AutomaticChallenge = true;
-                options.Authority = "http://localhost:12345/";
+                options.Authority = authServerHost;
                 options.Audiences.Add("ResourceServer01");
                 options.ClientId = "ResourceServer01";
                 options.ClientSecret = "secret_secret_secret";
