@@ -2,7 +2,7 @@ import { OpenIdConfiguration, UserManagerSettings } from "./open-id/open-id";
 
 let authority: string = window.location.host === "localhost"
     ? "http://localhost:12345"
-    : "https://zamboni-auth-server.azurewebsites.net";
+    : "https://zamboni-auth.azurewebsites.net";
 
 let host: string = window.location.host === "localhost"
     ? "http://localhost:9000"
