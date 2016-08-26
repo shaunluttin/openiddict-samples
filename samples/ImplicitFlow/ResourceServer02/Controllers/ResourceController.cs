@@ -25,7 +25,7 @@ namespace Mvc.Server.Controllers {
 
         [HttpGet("message-public")]
         public IActionResult GetMessagePublic() {
-            return Content("");
+            return Content("This is a public endpoint at ResourceServer02 that does not require authorization.");
         }    
     }
 }
