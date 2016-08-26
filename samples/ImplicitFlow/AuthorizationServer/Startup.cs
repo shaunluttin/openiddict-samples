@@ -96,7 +96,7 @@ namespace Mvc.Server
                 {
                     var aureliaOidcHost = env.IsDevelopment()
                             ? "localhost:9000"
-                            : "TODO.azurewebsites.net";
+                            : "https://zamboni-app.azurewebsites.net";
 
                     context.Applications.Add(new OpenIddictApplication<Guid>
                     {
