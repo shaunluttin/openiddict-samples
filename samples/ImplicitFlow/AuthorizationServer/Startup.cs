@@ -95,7 +95,7 @@ namespace Mvc.Server
                 if (!context.Applications.Any())
                 {
                     var aureliaOidcHost = env.IsDevelopment()
-                            ? "localhost:9000"
+                            ? "http://localhost:9000"
                             : "https://zamboni-app.azurewebsites.net";
 
                     context.Applications.Add(new OpenIddictApplication<Guid>
@@ -103,22 +103,22 @@ namespace Mvc.Server
                         ClientId = "Aurelia.OidcClientJs",
                         ClientSecret = Crypto.HashPassword("secret_secret_secret"),
                         DisplayName = "Aurelia Oidc Client Js",
-                        LogoutRedirectUri = $"http://{aureliaOidcHost}/signout-oidc",
-                        RedirectUri = $"http://{aureliaOidcHost}/signin-oidc",
+                        LogoutRedirectUri = $"{aureliaOidcHost}/signout-oidc",
+                        RedirectUri = $"{aureliaOidcHost}/signin-oidc",
                         Type = OpenIddictConstants.ClientTypes.Public
                     });
 
                     var oidcClientHost = env.IsDevelopment()
-                           ? "localhost:5000"
-                           : "TODO.azurewebsites.net";
+                           ? "http://localhost:5000"
+                           : "https://TODO.azurewebsites.net";
 
                     context.Applications.Add(new OpenIddictApplication<Guid>
                     {
                         ClientId = "OidcClientJs.OidcClient",
                         ClientSecret = Crypto.HashPassword("secret_secret_secret"),
                         DisplayName = "Oidc Client Js - Oidc Client Sample",
-                        LogoutRedirectUri = $"http://{oidcClientHost}/oidc-client-sample.html",
-                        RedirectUri = $"http://{oidcClientHost}/oidc-client-sample.html",
+                        LogoutRedirectUri = $"{oidcClientHost}/oidc-client-sample.html",
+                        RedirectUri = $"{oidcClientHost}/oidc-client-sample.html",
                         Type = OpenIddictConstants.ClientTypes.Public
                     });
 
@@ -127,8 +127,8 @@ namespace Mvc.Server
                         ClientId = "OidcClientJs.UserManager",
                         ClientSecret = Crypto.HashPassword("secret_secret_secret"),
                         DisplayName = "Oidc Client Js - User Manager Sample",
-                        LogoutRedirectUri = $"http://{oidcClientHost}/user-manager-sample.html",
-                        RedirectUri = $"http://{oidcClientHost}/user-manager-sample.html",
+                        LogoutRedirectUri = $"{oidcClientHost}/user-manager-sample.html",
+                        RedirectUri = $"{oidcClientHost}/user-manager-sample.html",
                         Type = OpenIddictConstants.ClientTypes.Public
                     });
 
