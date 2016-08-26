@@ -15,8 +15,6 @@ namespace Mvc.Server
         {
             app.UseDeveloperExceptionPage();
 
-            app.UseStaticFiles();
-
             // Add a middleware used to validate access tokens and protect the API endpoints.
             // app.UseOAuthValidation();
 

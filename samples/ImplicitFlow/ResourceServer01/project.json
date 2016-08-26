@@ -1,10 +1,32 @@
 {
   "version": "1.0.0-*",
   "buildOptions": {
+    "emitEntryPoint": true,
+    "warningsAsErrors": true,
+    "preserveCompilationContext": true,
     "debugType": "portable",
-    "emitEntryPoint": true
+    "copyToOutput": {
+      "include": [
+        "web.config"
+      ]
+    }
   },
-  "dependencies": {},
+  "dependencies": {
+    "AspNet.Security.OAuth.Introspection": "1.0.0-alpha2-final",
+    "AspNet.Security.OAuth.Validation": "1.0.0-alpha2-final",
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0",
+    "Microsoft.AspNetCore.Mvc": "1.0.0",
+    "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
+    "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.CommandLine": "1.0.0",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Logging.Console": "1.0.0",
+    "Microsoft.Extensions.Logging.Debug": "1.0.0",
+    "NWebsec.AspNetCore.Middleware": "1.0.0-gamma1-15",
+    "OpenIddict": "1.0.0-*"
+  },
   "frameworks": {
     "netcoreapp1.0": {
       "dependencies": {
@@ -15,5 +37,20 @@
       },
       "imports": "dnxcore50"
     }
+  },
+  "tools": {
+    "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-preview2-final",
+    "Microsoft.DotNet.Watcher.Tools": {
+      "version": "1.0.0-*",
+      "imports": "portable-net451+win8"
+    }
+  },
+  "scripts": {
+    "postpublish": "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
+  },
+  "publishOptions": {
+    "include": [
+      "web.config"
+    ]
   }
 }
