@@ -24,7 +24,9 @@ namespace Mvc.Server
                         .Build();
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration["Data:DefaultConnection:ConnectionString"]));
+            {
+                options.UseSqlite("Filename=./authorization.db");
+            });
 
             services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
                 .AddEntityFrameworkStores<ApplicationDbContext, Guid>()
