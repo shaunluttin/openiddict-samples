@@ -5,6 +5,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,32 +17,41 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Mvc.Server.Models;
+using Mvc.Server.ViewModels.Authorization;
+using Mvc.Server.ViewModels.Shared;
 using OpenIddict;
 
-namespace Zamboni.AuthorizationServer {
-    public class AuthorizationController : Controller {
-        private readonly OpenIddictApplicationManager<OpenIddictApplication> _applicationManager;
+namespace Mvc.Server
+{
+    public class AuthorizationController : Controller
+    {
+        private readonly OpenIddictApplicationManager<OpenIddictApplication<Guid>> _applicationManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly OpenIddictUserManager<ApplicationUser> _userManager;
 
         public AuthorizationController(
-            OpenIddictApplicationManager<OpenIddictApplication> applicationManager,
+            OpenIddictApplicationManager<OpenIddictApplication<Guid>> applicationManager,
             SignInManager<ApplicationUser> signInManager,
-            OpenIddictUserManager<ApplicationUser> userManager) {
+            OpenIddictUserManager<ApplicationUser> userManager)
+        {
             _applicationManager = applicationManager;
             _signInManager = signInManager;
             _userManager = userManager;
         }
 
         [Authorize, HttpGet, Route("~/connect/authorize")]
-        public async Task<IActionResult> Authorize() {
+        public async Task<IActionResult> Authorize()
+        {
             // Extract the authorization request from the ASP.NET environment.
             var request = HttpContext.GetOpenIdConnectRequest();
 
             // Retrieve the application details from the database.
             var application = await _applicationManager.FindByClientIdAsync(request.ClientId);
-            if (application == null) {
-                return View("Error", new ErrorViewModel {
+            if (application == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
                     Error = OpenIdConnectConstants.Errors.InvalidClient,
                     ErrorDescription = "Details concerning the calling client application cannot be found in the database"
                 });
@@ -49,7 +59,8 @@ namespace Zamboni.AuthorizationServer {
 
             // Flow the request_id to allow OpenIddict to restore
             // the original authorization request from the cache.
-            return View(new AuthorizeViewModel {
+            return View(new AuthorizeViewModel
+            {
                 ApplicationName = application.DisplayName,
                 RequestId = request.RequestId,
                 Scope = request.Scope
@@ -57,14 +68,17 @@ namespace Zamboni.AuthorizationServer {
         }
 
         [Authorize, HttpPost("~/connect/authorize/accept"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> Accept() {
+        public async Task<IActionResult> Accept()
+        {
             // Extract the authorization request from the ASP.NET environment.
             var request = HttpContext.GetOpenIdConnectRequest();
 
             // Retrieve the profile of the logged in user.
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) {
-                return View("Error", new ErrorViewModel {
+            if (user == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
                     Error = OpenIdConnectConstants.Errors.ServerError,
                     ErrorDescription = "An internal error has occurred"
                 });
@@ -80,7 +94,7 @@ namespace Zamboni.AuthorizationServer {
                 new AuthenticationProperties(),
                 OpenIdConnectServerDefaults.AuthenticationScheme);
 
-            ticket.SetResources(request.GetResources());
+            ticket.SetResources(request.GetResources().Concat(new[] { "ResourceServer01", "ResourceServer02" }));
             ticket.SetScopes(request.GetScopes());
 
             // Returning a SignInResult will ask OpenIddict to issue the appropriate access/identity tokens.
@@ -88,26 +102,30 @@ namespace Zamboni.AuthorizationServer {
         }
 
         [Authorize, HttpPost("~/connect/authorize/deny"), ValidateAntiForgeryToken]
-        public IActionResult Deny() {
+        public IActionResult Deny()
+        {
             // Notify OpenIddict that the authorization grant has been denied by the resource owner
             // to redirect the user agent to the client application using the appropriate response_mode.
             return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
         }
 
         [HttpGet("~/connect/logout")]
-        public IActionResult Logout() {
+        public IActionResult Logout()
+        {
             // Extract the authorization request from the ASP.NET environment.
             var request = HttpContext.GetOpenIdConnectRequest();
 
             // Flow the request_id to allow OpenIddict to restore
             // the original logout request from the distributed cache.
-            return View(new LogoutViewModel {
+            return View(new LogoutViewModel
+            {
                 RequestId = request.RequestId,
             });
         }
 
         [HttpPost("~/connect/logout"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout(CancellationToken cancellationToken) {
+        public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+        {
             // Ask ASP.NET Core Identity to delete the local and external cookies created
             // when the user agent is redirected from the external identity provider
             // after a successful authentication flow (e.g Google or Facebook).

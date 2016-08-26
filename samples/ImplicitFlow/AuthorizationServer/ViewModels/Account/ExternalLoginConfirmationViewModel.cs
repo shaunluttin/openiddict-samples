@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Zamboni.AuthorizationServer {
+namespace Mvc.Server.ViewModels.Account {
     public class ExternalLoginConfirmationViewModel
     {
         [Required]

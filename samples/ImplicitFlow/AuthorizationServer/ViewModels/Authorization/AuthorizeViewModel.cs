@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace Zamboni.AuthorizationServer {
+namespace Mvc.Server.ViewModels.Authorization {
     public class AuthorizeViewModel {
         [Display(Name = "Application")]
         public string ApplicationName { get; set; }

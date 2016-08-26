@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Zamboni.AuthorizationServer {
+namespace Mvc.Server.ViewModels.Shared {
     public class ErrorViewModel {
         [Display(Name = "Error")]
         public string Error { get; set; }

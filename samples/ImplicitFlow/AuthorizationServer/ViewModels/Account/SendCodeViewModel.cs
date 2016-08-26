@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Zamboni.AuthorizationServer {
+namespace Mvc.Server.ViewModels.Account {
     public class SendCodeViewModel {
         public string SelectedProvider { get; set; }
 
