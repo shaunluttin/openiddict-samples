@@ -37,9 +37,11 @@
     "aurelia-templating-resources": "^1.0.0",
     "aurelia-templating-router": "^1.0.0",
     "aurelia-testing": "^1.0.0-beta.2.0.0",
+    "babel-polyfill": "^6.13.0",
     "bluebird": "^3.4.1",
     "jsrsasign": "^5.0.12",
     "jwt-decode": "^2.1.0",
+    "oidc-client": "^1.1.0",
     "requirejs": "^2.2.0",
     "text": "requirejs/text",
     "whatwg-fetch": "^1.0.0"
@@ -47,7 +49,6 @@
   "peerDependencies": {},
   "devDependencies": {
     "aurelia-cli": "^0.17.0",
-    "aurelia-testing": "^1.0.0-beta.1.0.0",
     "aurelia-tools": "^0.2.2",
     "browser-sync": "^2.13.0",
     "connect-history-api-fallback": "^1.2.0",

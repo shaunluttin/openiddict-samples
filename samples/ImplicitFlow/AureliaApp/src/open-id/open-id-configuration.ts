@@ -1,6 +1,8 @@
+import { UserManagerSettings } from "oidc-client";
+
 export class OpenIdConfiguration {
-    // TODO Add other properties
-    // TOOD that we want to let the client application choose.
-    public LoginRedirectModuleId = "login";
-    public LogoutRedirectModuleId = "logout";
+    public LoginRedirectModuleId: string = "login";
+    public LogoutRedirectModuleId: string = "logout";
+    public UserManagerSettings: UserManagerSettings;
 }
+

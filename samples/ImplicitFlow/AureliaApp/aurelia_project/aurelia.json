@@ -121,6 +121,7 @@
           "aurelia-templating",
           "aurelia-templating-binding",
           "aurelia-templating-resources",
+          "oidc-client",
           "text",
           {
             "name": "aurelia-templating-resources",

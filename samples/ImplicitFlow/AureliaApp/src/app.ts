@@ -1,6 +1,6 @@
 import { autoinject } from "aurelia-framework";
 import { RouterConfiguration, Router } from "aurelia-router";
-import { OpenId, OpenIdConfiguration } from "./open-id/open-id";
+import { OpenId } from "./open-id/open-id";
 
 @autoinject
 export class App {
@@ -21,12 +21,6 @@ export class App {
             { moduleId: "login", route: ["", "login"] },
         ]);
 
-        // configure open id
-        let openIdConfiguration: OpenIdConfiguration = {
-            LoginRedirectModuleId: "login",
-            LogoutRedirectModuleId: "login",
-        };
-
-        this.openId.Configure(routerConfiguration, openIdConfiguration);
+        this.openId.Configure(routerConfiguration);
     }
 }

@@ -3,21 +3,11 @@ import * as changedInPlace from "gulp-changed-in-place";
 import * as plumber from "gulp-plumber";
 import * as sourcemaps from "gulp-sourcemaps";
 import * as notify from "gulp-notify";
-import * as rename from "gulp-rename";
 import * as ts from "gulp-typescript";
 import * as project from "../aurelia.json";
-import { CLIOptions, build } from "aurelia-cli";
+import { build } from "aurelia-cli";
 import * as eventStream from "event-stream";
 import * as merge from "merge2";
-
-function configureEnvironment() {
-  let env = CLIOptions.getEnvironment();
-
-  return gulp.src(`aurelia_project/environments/${env}.ts`)
-    .pipe(changedInPlace({ firstPass: true }))
-    .pipe(rename("environment.ts"))
-    .pipe(gulp.dest(project.paths.root));
-}
 
 let tsProject = tsProject || null;
 
@@ -47,6 +37,5 @@ function buildTypeScript() {
 }
 
 export default gulp.series(
-  configureEnvironment,
   buildTypeScript
 );

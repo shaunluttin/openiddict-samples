@@ -1,75 +1,72 @@
-import { Aurelia, autoinject } from "aurelia-framework";
-import { RouterConfigurationService } from "./router-configuration-service";
+import { autoinject, Aurelia} from "aurelia-framework";
 import { RouterConfiguration } from "aurelia-router";
-import { HttpDiscoveryService } from "./http-discovery-service";
-import { ImplicitFlowService } from "./implicit-flow-service";
-import { StorageService } from "./storage-service";
-import { UserInfoModel } from "./user-info-model";
+import { User, UserManager, UserManagerSettings } from "oidc-client";
+import { OpenIdRouterConfigurationService } from "./open-id-router-configuration-service";
 import { OpenIdConfiguration } from "./open-id-configuration";
-import { WindowService } from "./window-service";
+import { OpenIdLogger } from "./open-id-logger";
 
-function configure(aurelia: Aurelia, callback) {
-    callback();
+function configure(aurelia: Aurelia, callback: Function) {
+
+    let logger: OpenIdLogger = aurelia.container.get(OpenIdLogger);
+
+    callback(function (oidcConfig: OpenIdConfiguration) {
+        logger.Debug("Configuring the OpenId Connect Client");
+
+        let userManagerSettings = oidcConfig.UserManagerSettings;
+        aurelia.container.registerInstance(UserManager, new UserManager(userManagerSettings));
+        aurelia.container.registerInstance(OpenIdConfiguration, oidcConfig);
+    });
 }
 
 @autoinject
 class OpenId {
 
-    public get User(): UserInfoModel {
-        return this.user;
-    }
-
-    private user: UserInfoModel;
-
     constructor(
-        private httpDiscoveryService: HttpDiscoveryService,
-        private implicitFlowService: ImplicitFlowService,
-        private routerConfigurationService: RouterConfigurationService,
-        private storageService: StorageService,
-        private windowService: WindowService) { }
+        private routerConfigurationService: OpenIdRouterConfigurationService,
+        private logger: OpenIdLogger,
+        public UserManager: UserManager) { }
 
-    public Configure(routerConfiguration: RouterConfiguration, openIdConfiguration: OpenIdConfiguration) {
+    public Configure(routerConfiguration: RouterConfiguration) {
 
         // TODO throw if routerConfiguration is null
         // TODO throw is openIdConfiguration is null (maybe - do we have defaults?)
         this.routerConfigurationService.ConfigureRouter(
             routerConfiguration,
-            openIdConfiguration,
             this.LoginRedirectHandler,
             this.PostLogoutRedirectHandler);
     }
 
     public Login() {
-        let prepareAuthRequest = this.implicitFlowService.PrepareAuthenticationRequest();
-        prepareAuthRequest.then((authRequest) => {
-            this.implicitFlowService.SendRequestToAuthorizationServer(authRequest);
-        });
+        this.logger.Debug("Login");
+
+        // signinRedirect throws with empty/null data.
+        this.UserManager.signinRedirect({});
     }
 
     public Logout() {
-        let createLogoutUri = this.httpDiscoveryService.CreateLogoutUri();
-        createLogoutUri.then((logoutUri) => {
-            this.windowService.SetHref(logoutUri);
+        this.logger.Debug("Logout");
+
+        // signoutRedirect throws with empty/null data.
+        this.UserManager.signoutRedirect({});
+    }
+
+    // This is public only to facilitate unit testing.
+    // And is a lamda to capture the object in `this`.
+    public LoginRedirectHandler = (): Promise<any> => {
+        this.logger.Debug("LoginRedirectHandler");
+        return this.UserManager.getUser().then((user) => {
+            // avoid page refresh errors
+            if (user === null || user === undefined) {
+                return this.UserManager.signinRedirectCallback(null);
+            }
         });
     }
 
-    // TODO Consider moving this into the UserInfo class.
-    public IsLoggedIn() {
-        return this.storageService.GetAccessToken() !== null &&
-            this.user !== undefined &&
-            this.user !== null;
-    }
-
-    // NOTE: This is public only to facilitate unit testing.
-    public LoginRedirectHandler = () => {
-        this.user = this.implicitFlowService.ValidateIdTokenAndRetrieveSubjectIdentifier();
-        this.storageService.SetAccessToken(this.user.AccessToken);
-        this.storageService.SetIdToken(this.user.IdToken);
-    }
-
-    // NOTE: This is public only to facilitate unit testing.
-    public PostLogoutRedirectHandler = () => {
-        this.storageService.ClearStorageServiceItems();
+    // This is public only to facilitate unit testing.
+    // And is a lamda to capture the object in `this`.
+    public PostLogoutRedirectHandler = (): Promise<any> => {
+        this.logger.Debug("PostLogoutRedirectHandler");
+        return this.UserManager.signoutRedirectCallback(null);
     }
 }
 
@@ -77,4 +74,9 @@ export {
     configure,
     OpenId,
     OpenIdConfiguration,
+    OpenIdLogger,
+    OpenIdRouterConfigurationService,
+    User,
+    UserManager,
+    UserManagerSettings
 }

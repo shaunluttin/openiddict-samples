@@ -1,7 +1,25 @@
 <template>
   <a show.bind='!isLoggedIn' href="#" click.trigger="login()">Log in</a>
-  <a show.bind='isLoggedIn' href="#" click.trigger="logout()">Log out</a>
-  <p>${message}</p>
-</template>
+  <div show.bind="isLoggedIn">
 
-  
+    <style type="text/css">
+      pre {
+        background: #eee;
+        padding: 1em;
+        max-height: 300px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+    </style>
+
+    <div>
+      <button click.trigger="logout()">Log out</button>
+      <pre>${authorizationServerMessage}</pre>
+    </div>
+    <div>
+      <button click.trigger="queryResourceServer(01)">Query Resource Server 01</button>
+      <button click.trigger="queryResourceServer(02)">Query Resource Server 02</button>
+      <pre>${resourceServerMessage}</pre>
+    </div>
+   </div>
+</template>

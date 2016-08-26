@@ -1,9 +1,9 @@
 import { Aurelia } from "aurelia-framework";
-import environment from "./environment";
+import oidcConfig from "./oidc-config";
 
 // Configure Bluebird Promises.
 // Note: You may want to use environment-specific configuration.
-(<any> Promise).config({
+(<any>Promise).config({
   warnings: {
     wForgottenReturn: false,
   },
@@ -12,17 +12,10 @@ import environment from "./environment";
 export function configure(aurelia: Aurelia) {
   aurelia.use
     .standardConfiguration()
-    .plugin("./open-id/open-id", config => {
-      console.log("open-id plugin callback");
-    });
+    .plugin("./open-id/open-id", (callback) => callback(oidcConfig));
 
-  if (environment.debug) {
-    aurelia.use.developmentLogging();
-  }
-
-  if (environment.testing) {
-    aurelia.use.plugin("aurelia-testing");
-  }
+  aurelia.use.developmentLogging();
+  aurelia.use.plugin("aurelia-testing");
 
   aurelia.start().then(() => aurelia.setRoot());
 }

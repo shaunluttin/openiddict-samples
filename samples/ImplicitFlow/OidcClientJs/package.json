@@ -1,0 +1,19 @@
+{
+  "name": "oidc-client-js",
+  "version": "0.1.0",
+  "description": "This is a sample of using the oidc-client-js with OpenIddict.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openiddict/openiddict-samples.git"
+  },
+  "author": "Shaun Luttin, Brock Allen & Dominick Baier",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/openiddict/openiddict-samples/issues"
+  },
+  "homepage": "https://github.com/openiddict/openiddict-samples#readme"
+}

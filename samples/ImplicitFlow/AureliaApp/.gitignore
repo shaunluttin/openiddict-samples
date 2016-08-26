@@ -1,6 +1,0 @@
-coverage/
-scripts/**/*.js
-scripts/**/*.js.map
-scripts/**/*.ts
-typings/
-*.swp
