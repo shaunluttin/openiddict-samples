@@ -56,8 +56,8 @@ export class Login {
                    : "http://localhost:5002/api/message";
             } else {
                 url = serverNum === 1
-                   ? "http://zamboni-resource-01.azurewebsites.net/api/message"
-                   : "http://zamboni-resource-02.azurewebsites.net/api/message";
+                   ? "https://zamboni-resource-01.azurewebsites.net/api/message"
+                   : "https://zamboni-resource-02.azurewebsites.net/api/message";
             }
 
             this.httpClient.fetch(url, fetchInit)
