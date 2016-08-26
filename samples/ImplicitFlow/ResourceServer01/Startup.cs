@@ -25,7 +25,7 @@ namespace Mvc.Server
 
             var authServerHost = env.IsDevelopment() 
                 ? "http://localhost:12345"
-                : "https://zamboni-auth-server.azurewebsites.net";
+                : "https://zamboni-auth.azurewebsites.net";
 
             app.UseOAuthIntrospection(options =>
             {
