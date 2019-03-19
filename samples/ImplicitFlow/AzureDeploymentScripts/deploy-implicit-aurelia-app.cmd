@@ -64,6 +64,8 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 
 :: 2. Install and Build
 cd %DEPLOYMENT_TARGET%
+call :ExecuteCmd npm install -g rimraf
+call :ExecuteCmd rimraf node_modules
 call :ExecuteCmd npm install -y
 call :ExecuteCmd npm run build:azure:prod
 
