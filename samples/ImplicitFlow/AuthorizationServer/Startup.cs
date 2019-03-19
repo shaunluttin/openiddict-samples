@@ -29,7 +29,7 @@ namespace AuthorizationServer
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 // Configure the context to use Microsoft SQL Server.
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
 
                 // Register the entity sets needed by OpenIddict.
                 // Note: use the generic overload if you need
@@ -129,7 +129,7 @@ namespace AuthorizationServer
         {
             app.UseCors(builder =>
             {
-                builder.WithOrigins("http://localhost:9000");
+                builder.WithOrigins("https://zamboni-app.azurewebsites.net");
                 builder.WithMethods("GET");
                 builder.WithHeaders("Authorization");
             });
@@ -174,8 +174,8 @@ namespace AuthorizationServer
                         {
                             ClientId = "aurelia",
                             DisplayName = "Aurelia client application",
-                            PostLogoutRedirectUris = { new Uri("http://localhost:9000/signout-oidc") },
-                            RedirectUris = { new Uri("http://localhost:9000/signin-oidc") },
+                            PostLogoutRedirectUris = { new Uri("https://zamboni-app.azurewebsites.net/signout-oidc") },
+                            RedirectUris = { new Uri("https://zamboni-app.azurewebsites.net/signin-oidc") },
                             Permissions =
                             {
                                 OpenIddictConstants.Permissions.Endpoints.Authorization,
