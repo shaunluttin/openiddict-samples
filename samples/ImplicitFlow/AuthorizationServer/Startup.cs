@@ -6,6 +6,7 @@ using AuthorizationServer.Extensions;
 using AuthorizationServer.Models;
 using AuthorizationServer.Services;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -125,11 +126,15 @@ namespace AuthorizationServer
             services.AddTransient<ISmsSender, AuthMessageSender>();
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseCors(builder =>
             {
-                builder.WithOrigins("https://zamboni-app.azurewebsites.net");
+                var clientAppOrigin = env.IsDevelopment()
+                    ? "http://localhost:9000"
+                    : "https://zamboni-app.azurewebsites.net";
+
+                builder.WithOrigins(clientAppOrigin);
                 builder.WithMethods("GET");
                 builder.WithHeaders("Authorization");
             });
