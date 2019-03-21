@@ -21,7 +21,8 @@ namespace AuthorizationServer
     {
         public IConfiguration Configuration { get; }
             = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
+                // .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.Development.json")
                 .AddEnvironmentVariables()
                 .Build();
 
@@ -130,10 +131,7 @@ namespace AuthorizationServer
         {
             app.UseCors(builder =>
             {
-                var clientAppOrigin = env.IsDevelopment()
-                    ? "http://localhost:9000"
-                    : "https://zamboni-app.azurewebsites.net";
-
+                var clientAppOrigin = Configuration["ClientOrigin"];
                 builder.WithOrigins(clientAppOrigin);
                 builder.WithMethods("GET");
                 builder.WithHeaders("Authorization");
@@ -175,12 +173,14 @@ namespace AuthorizationServer
 
                     if (await manager.FindByClientIdAsync("aurelia") == null)
                     {
+                        var clientOrigin = Configuration["ClientOrigin"];
+
                         var descriptor = new OpenIddictApplicationDescriptor
                         {
                             ClientId = "aurelia",
                             DisplayName = "Aurelia client application",
-                            PostLogoutRedirectUris = { new Uri("https://zamboni-app.azurewebsites.net/signout-oidc") },
-                            RedirectUris = { new Uri("https://zamboni-app.azurewebsites.net/signin-oidc") },
+                            PostLogoutRedirectUris = { new Uri($"{clientOrigin}/signout-oidc") },
+                            RedirectUris = { new Uri($"{clientOrigin}/signin-oidc") },
                             Permissions =
                             {
                                 OpenIddictConstants.Permissions.Endpoints.Authorization,
