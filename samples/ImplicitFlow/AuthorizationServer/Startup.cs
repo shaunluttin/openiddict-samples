@@ -19,12 +19,15 @@ namespace AuthorizationServer
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
-            = new ConfigurationBuilder()
-                // .AddJsonFile("appsettings.json")
-                .AddJsonFile("appsettings.Development.json")
+        public readonly IConfiguration Configuration;
+
+        public Startup(IHostingEnvironment env)
+        {
+            Configuration = new ConfigurationBuilder()
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json")
                 .AddEnvironmentVariables()
                 .Build();
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -58,7 +61,7 @@ namespace AuthorizationServer
                 {
                     // Register the Entity Framework stores and models.
                     options.UseEntityFrameworkCore()
-                           .UseDbContext<ApplicationDbContext>();
+                       .UseDbContext<ApplicationDbContext>();
                 })
 
                 // Register the OpenIddict server handler.
@@ -71,14 +74,14 @@ namespace AuthorizationServer
 
                     // Enable the authorization, logout, userinfo, and introspection endpoints.
                     options.EnableAuthorizationEndpoint("/connect/authorize")
-                           .EnableLogoutEndpoint("/connect/logout")
-                           .EnableIntrospectionEndpoint("/connect/introspect")
-                           .EnableUserinfoEndpoint("/api/userinfo");
+                       .EnableLogoutEndpoint("/connect/logout")
+                       .EnableIntrospectionEndpoint("/connect/introspect")
+                       .EnableUserinfoEndpoint("/api/userinfo");
 
                     // Mark the "email", "profile" and "roles" scopes as supported scopes.
                     options.RegisterScopes(OpenIdConnectConstants.Scopes.Email,
-                                           OpenIdConnectConstants.Scopes.Profile,
-                                           OpenIddictConstants.Scopes.Roles);
+                                       OpenIdConnectConstants.Scopes.Profile,
+                                       OpenIddictConstants.Scopes.Roles);
 
                     // Note: the sample only uses the implicit code flow but you can enable
                     // the other flows if you need to support implicit, password or client credentials.
@@ -127,7 +130,7 @@ namespace AuthorizationServer
             services.AddTransient<ISmsSender, AuthMessageSender>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseCors(builder =>
             {
