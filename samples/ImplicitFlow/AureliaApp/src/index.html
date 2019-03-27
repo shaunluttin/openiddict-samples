@@ -22,8 +22,8 @@ alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribb
   <p show.bind="inMemoryUser == null">
     Try logging in. If you have already logged in, something has gone wrong; the web developer tools console, network, or storage tabs might have more information.
   </p>
-  <p>Current Time: ${currentTime}</p>
-  <p>Access Token Expires In: ${accessTokenExpiresIn}</p>
+  <p>Current Time: ${currentTimeInSeconds}</p>
+  <p>Access Token Expires In: ${secondsUntilAccessTokenExpires}</p>
   <button click.trigger="loginSilent()">Manual Silent Login</button>
   <p>
     <pre>${userAsJson}</pre>

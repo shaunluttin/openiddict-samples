@@ -9,8 +9,8 @@ export class Home {
 
     public isLoggedIn: boolean;
 
-    private accessTokenExpiresIn: number;
-    private currentTime: number;
+    private secondsUntilAccessTokenExpires: number;
+    private currentTimeInSeconds: number;
     private resourceServerMessage: Array<string> = new Array<string>();
     private inMemoryUser: User;
 
@@ -23,36 +23,12 @@ export class Home {
     };
 
     constructor(private openIdConnect: OpenIdConnect, private httpClient: HttpClient) {
-        this.setInMemoryUserOnUserLoadedEvent();
-        this.setTimeUntilAccessTokenExpiry();
-    }
-
-    public attached() {
-
-        // retrieve the user from storage
-        this.openIdConnect.userManager.getUser()
-            .then((user) => {
-                if (typeof user === "undefined" || user === null) {
-                    // if we do not have a user in localStorage (or sessionStorage)
-                    // then we do not have an id_token to use as an id_token_hint;
-                    // as a result, we cannot do a silent login, so we return; 
-                    // alternatively, we could call `login` to 
-                    // automatically redirect to the authorization server:
-                    // this.openIdConnect.Login();
-                    return;
-                } else {
-                    if (user.expired) {
-                        // if we have an EXPIRED user in storage,
-                        // then we can do a silent login.
-                        this.loginSilent();
-                    } else {
-                        // if we have a non-expired user in storage, 
-                        // then our app can use it for access.
-                        this.inMemoryUser = user;
-                    }
-
-                }
-            });
+        this.initializeCountdownClock();
+        this.openIdConnect.observeUser((user: User) => {
+            if (user) {
+                this.inMemoryUser = user;
+            }
+        })
     }
 
     public queryResourceServer(serverNum: number, isPrivate: boolean) {
@@ -77,21 +53,19 @@ export class Home {
         });
     }
 
-    private setInMemoryUserOnUserLoadedEvent() {
-        this.openIdConnect.userManager.events.addUserLoaded(() =>
-            this.openIdConnect.userManager.getUser().then((user: User) =>
-                this.inMemoryUser = user));
-    }
+    private initializeCountdownClock() {
 
-    private setTimeUntilAccessTokenExpiry() {
+        const oneSecondInMilliseconds = 1000;
+
         setInterval(() => {
-            this.currentTime = Math.round((new Date()).getTime() / 1000);
+            this.currentTimeInSeconds =
+                Math.round((new Date()).getTime() / oneSecondInMilliseconds);
 
-            if (typeof this.inMemoryUser !== "undefined" && this.inMemoryUser !== null) {
-                this.accessTokenExpiresIn = this.inMemoryUser.expires_in;
+            if (this.inMemoryUser) {
+                this.secondsUntilAccessTokenExpires = this.inMemoryUser.expires_in;
             }
 
-        }, 1000);
+        }, oneSecondInMilliseconds);
     }
 
     private getFetchInit(): RequestInit {

@@ -1,11 +1,11 @@
 export default {
-  debug: false,
-  testing: false,
+  debug: true,
+  testing: true,
   urls: {
-    authority: "https://zamboni-auth.azurewebsites.net",
-    host: "https://zamboni-app.azurewebsites.net",
-    resourceServer01: "https://zamboni-resource-01.azurewebsites.net",
-    resourceServer02: "https://zamboni-resource-02.azurewebsites.net",
+    authority: "http://localhost:12345",
+    host: "http://localhost:9000",
+    resourceServer01: "http://localhost:5001",
+    resourceServer02: "http://localhost:5002",
   },
-  useHttps: true,
+  useHttps: false,
 };
