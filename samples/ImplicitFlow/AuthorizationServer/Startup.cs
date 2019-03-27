@@ -20,6 +20,9 @@ namespace AuthorizationServer
 {
     public class Startup
     {
+        public static string TestUserName = "test@zamboni.com";
+        public static string TestPassword = "Testing123!";
+
         public readonly IConfiguration Configuration;
 
         public Startup(IHostingEnvironment env)
@@ -175,8 +178,8 @@ namespace AuthorizationServer
 
                 async Task CreateTestUserAsync()
                 {
-                    var user = new ApplicationUser { UserName = "test@zamboni.com", Email = "test@zamboni.com" };
-                    await userManager.CreateAsync(user, "Testing123!");
+                    var user = new ApplicationUser { UserName = TestUserName, Email = TestUserName };
+                    await userManager.CreateAsync(user, TestPassword);
                 }
 
                 async Task CreateApplicationsAsync()

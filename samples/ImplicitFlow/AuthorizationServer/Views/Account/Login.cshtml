@@ -13,7 +13,13 @@
     <div class="col-md-8">
         <section>
             <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-                <h4>Use a local account to log in.</h4>
+                <h4>Register as a new user or use the test user:</h4>
+                <dl class="dl-horizontal">
+                    <dt>Email</dt>
+                    <dd>@AuthorizationServer.Startup.TestUserName</dd>
+                    <dt>Password</dt>
+                    <dd> @AuthorizationServer.Startup.TestPassword</dd>
+                </dl>
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
@@ -44,7 +50,7 @@
                     </div>
                 </div>
                 <p>
-                    <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">Register as a new user?</a>
+                    <a asp-action="Register" asp-route-returnUrl="@ViewData["ReturnUrl"]">Register as a new user</a>.
                 </p>
             </form>
         </section>
