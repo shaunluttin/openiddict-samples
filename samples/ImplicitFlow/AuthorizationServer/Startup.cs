@@ -7,6 +7,7 @@ using AuthorizationServer.Models;
 using AuthorizationServer.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -165,10 +166,18 @@ namespace AuthorizationServer
             using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 await context.Database.EnsureCreatedAsync();
 
                 await CreateApplicationsAsync();
                 await CreateScopesAsync();
+                await CreateTestUserAsync();
+
+                async Task CreateTestUserAsync()
+                {
+                    var user = new ApplicationUser { UserName = "test@zamboni.com", Email = "test@zamboni.com" };
+                    await userManager.CreateAsync(user, "Testing123!");
+                }
 
                 async Task CreateApplicationsAsync()
                 {
